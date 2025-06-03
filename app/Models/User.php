@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-//em sistemas maiores, poderia haver uma 'BaseModel' para lógica comum de banco de dados.
-
 class User
 {
     //simu de db
@@ -23,35 +21,31 @@ class User
     }
 
     /**
-     * encontra um usuário pelo ID..
      * @param int $id
-     * @return array|null retorna o array do usuário ou null se não for encontrado.
+     * @return array|null 
      */
-    public function getUserById(int $id): ?array
-    {
+    public function getUserById(int $id): ?array{
         foreach ($this->users as $user) {
             if ($user['id'] === $id) {
                 return $user;
             }
         }
-        return null; // usuário não encontrado
+        return null;
     }
 
     /**
-     * a adição de um novo usuário.
      * @param array $userData date new user (name, email).
-     * @return array user add with a ID (simulado).
+     * @return array 
      */
-    public function addUser(array $userData): array
-    {
-        $newId = end($this->users)['id'] + 1; // ID para simu
+    public function addUser(array $userData): array{
+        $newId = end($this->users)['id'] + 1; 
         $newUser = [
             'id' => $newId,
             'name' => $userData['name'] ?? 'Novo Usuário',
             'email' => $userData['email'] ?? 'email@example.com',
             'role' => $userData['role'] ?? 'user'
         ];
-        $this->users[] = $newUser; // add array
+        $this->users[] = $newUser;
         return $newUser;
     }
 }

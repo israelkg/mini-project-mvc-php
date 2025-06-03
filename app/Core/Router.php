@@ -4,22 +4,18 @@ namespace App\Core;
 
 use App\Core\Application;
 
-class Router
-{
+class Router{
     protected array $routes = [];
 
-    public function get(string $path, $callback)
-    {
+    public function get(string $path, $callback){
         $this->routes['get'][$path] = $callback;
     }
 
-    public function post(string $path, $callback)
-    {
+    public function post(string $path, $callback){
         $this->routes['post'][$path] = $callback;
     }
 
-    public function resolve()
-    {
+    public function resolve(){
         $path = $_SERVER['REQUEST_URI'] ?? '/';
         $position = strpos($path, '?');
         if ($position !== false) {
@@ -27,12 +23,11 @@ class Router
         }
 
         // ajuste
-        $basePath = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])); // Ex: /mvc-project/public
+        $basePath = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])); 
         if (strpos($path, $basePath) === 0) {
             $path = substr($path, strlen($basePath));
         }
-        // Se a URL resultante for vazia (ex: acessou http://localhost/mvc-project/public/),
-        // defina-a como a raiz.
+
         if ($path === '') {
             $path = '/';
         }
@@ -59,8 +54,7 @@ class Router
         return call_user_func($callback);
     }
 
-    public function renderView(string $view, array $params = [])
-    {
+    public function renderView(string $view, array $params = []){
         foreach ($params as $key => $value) {
             $$key = $value;
         }

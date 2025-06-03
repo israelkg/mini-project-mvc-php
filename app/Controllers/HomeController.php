@@ -7,8 +7,7 @@ use App\Models\User;
 
 class HomeController extends Controller
 {
-    public function index()
-    {
+    public function index(){
         $data = [
             'title' => 'Página Inicial do Meu Projeto MVC',
             'greeting' => 'Bem-vindo ao seu projeto MVC em PHP do zero!'
@@ -16,8 +15,7 @@ class HomeController extends Controller
         return $this->render('home/index', $data);
     }
 
-    public function about()
-    {
+    public function about(){
         $data = [
             'title' => 'Sobre Nós - Meu Projeto MVC',
             'content' => 'Esta é a página "Sobre Nós" do nosso projeto MVC básico.'
@@ -25,26 +23,16 @@ class HomeController extends Controller
         return $this->render('home/about', $data);
     }
 
-    /**
-     * listar usuários, usando o Model.
-     * corresponde à rota '/users'.
-     */
-    public function users()
-    {
-        // instancia o model de usuário.
+    public function users(){
         $userModel = new User();
 
-        // 2. O Controller pede os dados ao Model. O Controller não se preocupa
-        //    com 'como' os dados são obtidos (se é de um array, DB, API, etc.).
         $users = $userModel->getAllUsers();
 
-        //prepara os dados para a View.
         $data = [
             'title' => 'Lista de Usuários',
-            'users' => $users //passa o array de usuários para a View
+            'users' => $users
         ];
 
-        //decide qual View exibir e a renderiza com os dados.
         return $this->render('home/users', $data);
     }
 
@@ -57,7 +45,6 @@ class HomeController extends Controller
         $email = $_POST['email'] ?? '';
         $role = $_POST['role'] ?? '';
 
-        //armazenar as mensagens de erro de validação
         $errors = [];
 
         if (empty($name)) $errors[] = 'O campo Nome é obrigatório.';
@@ -75,10 +62,8 @@ class HomeController extends Controller
 
     
         if (empty($errors)) {
-            //salvando o usuario
             $userModel = new User();
 
-            // dados para o Model
             $userData = [
                 'name' => $name,
                 'email' => $email,
@@ -86,7 +71,7 @@ class HomeController extends Controller
             ];
 
             $userModel->addUser($userData);
-            return $this->redirect('/users');    //redireciona para a pagina de users
+            return $this->redirect('/users');    
 
         } else {
             $oldData = [
@@ -97,8 +82,8 @@ class HomeController extends Controller
 
             $data = [
                 'title' => 'Cadastrar Novo Usuário',
-                'errors' => $errors, //erros para a View
-                'old' => $oldData   //dados antigos para a View re-popular os campos
+                'errors' => $errors, 
+                'old' => $oldData   
             ];
             return $this->render('home/create-user', $data);
         }

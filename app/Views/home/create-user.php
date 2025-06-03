@@ -6,7 +6,6 @@
         echo '<strong>Erros no Formulário:</strong>';
         echo '<ul>';
         foreach ($errors as $error) {
-            // htmlspecialchars() é crucial para prevenir ataques XSS ao exibir mensagens que podem conter dados do usuário.
             echo '<li>' . htmlspecialchars($error) . '</li>';
         }
         echo '</ul>';

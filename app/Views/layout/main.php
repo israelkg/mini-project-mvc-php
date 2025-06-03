@@ -30,8 +30,6 @@
         </nav>
     </header>
     <main>
-        <!--  variável $content contém todo o HTML gerado pela View específica 
-          sim(home/index.php ou home/about.php) que o Router capturou usando ob_start() e ob_get_clean() -->
         <?php echo $content;?>
     </main>
     <footer>
