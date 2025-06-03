@@ -1,0 +1,10 @@
+
+/vendor/
+/composer.lock # Opcional, mas geralmente bom para travar as versões exatas das dependências
+/storage/logs/ # Se você tivesse uma pasta para logs
+/var/log/ # Outro exemplo
+.env
+.env.local
+.vscode/
+.DS_Store # macOS
+Thumbs.db # Windows
