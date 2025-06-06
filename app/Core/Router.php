@@ -3,9 +3,20 @@
 namespace App\Core;
 
 use App\Core\Application;
+use App\Core\Request;   
+use App\Core\Response; 
 
 class Router{
     protected array $routes = [];
+    public Request $request;
+    public Response $response;
+    public Application $app;
+
+    public function __construct(Request $request, Response $response, Application $app){
+        $this->request = $request;
+        $this->response = $response;
+        $this->app = $app;
+    }
 
     public function get(string $path, $callback){
         $this->routes['get'][$path] = $callback;
@@ -16,30 +27,25 @@ class Router{
     }
 
     public function resolve(){
-        $path = $_SERVER['REQUEST_URI'] ?? '/';
-        $position = strpos($path, '?');
-        if ($position !== false) {
-            $path = substr($path, 0, $position);
+        $path = $this->request->getPath(); 
+        
+        $appBasePath = $this->app->basePath; 
+        
+        if ($appBasePath !== '' && strpos($path, $appBasePath) === 0) {
+            $path = substr($path, strlen($appBasePath));
         }
 
-        // ajuste
-        $basePath = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])); 
-        if (strpos($path, $basePath) === 0) {
-            $path = substr($path, strlen($basePath));
-        }
-
-        if ($path === '') {
+        if ($path === '' || $path === false) { 
             $path = '/';
         }
-
         
         $method = strtolower($_SERVER['REQUEST_METHOD']);
 
         $callback = $this->routes[$method][$path] ?? false;
 
         if ($callback === false) {
-            http_response_code(404);
-            return "<h1>404 Not Found</h1>";
+            $this->response->setStatusCode(404); 
+            return $this->renderView('_404'); 
         }
 
         if (is_string($callback)) {
@@ -47,25 +53,41 @@ class Router{
         }
 
         if (is_array($callback)) {
+            /** @var \App\Core\Controller $controller */ 
             $controller = new $callback[0]();
-            $callback[0] = $controller;
+            
+            $controller->setRequest($this->request); 
+            $controller->setResponse($this->response);
+            
+            $callback[0] = $controller; 
         }
 
-        return call_user_func($callback);
+        return call_user_func($callback, $this->request, $this->response);
     }
 
     public function renderView(string $view, array $params = []){
         foreach ($params as $key => $value) {
             $$key = $value;
         }
-
-        $basePath = Application::$app->basePath;
+          
+        $basePath = $this->app->basePath; 
         
         ob_start();
-        include_once ROOT_PATH . "/app/Views/$view.php";
+        $viewPath = Application::$ROOT_DIR . "/app/Views/$view.php"; 
+        if (!file_exists($viewPath)) {
+            throw new \Exception("View '{$view}.php' não encontrada em: " . $viewPath);
+        }
+        include_once $viewPath; 
         $content = ob_get_clean();
 
-        include_once ROOT_PATH . "/app/Views/layout/main.php";
-        return ob_get_clean();
+        ob_start();
+        $layoutPath = Application::$ROOT_DIR . "/app/Views/layout/main.php"; 
+        if (!file_exists($layoutPath)) {
+            throw new \Exception("Layout 'main.php' não encontrado em: " . $layoutPath);
+        }
+        include_once $layoutPath; 
+        $layoutOutput = ob_get_clean();
+    
+        return $layoutOutput; 
     }
 }

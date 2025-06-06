@@ -2,9 +2,22 @@
 
 namespace App\Core;
 
-use App\Core\Application;  
+use App\Core\Application; 
+use App\Core\Request; 
+use App\Core\Response; 
 
 class Controller{
+    protected Request $request;
+    protected Response $response;
+
+    public function setRequest(Request $request): void {
+        $this->request = $request;
+    }
+
+    public function setResponse(Response $response): void {
+        $this->response = $response;
+    }
+
     /**
      * @param string $view 
      * @param array $params
@@ -15,11 +28,11 @@ class Controller{
     }
 
     /**
-     * @param string $url
+     * @param string $url 
+     * @return void
      */
-    public function redirect(string $url){
+    public function redirect(string $url): void{ 
         $fullUrl = Application::$app->basePath . $url;
-        header("Location: $fullUrl");
-        exit;
+        $this->response->redirect($fullUrl); 
     }
 }
